@@ -1,0 +1,38 @@
+알고리즘, 리스트 특성과 선언 2차원 리스트 선언, 완전검색:모든경우의 수를 조사하는 방법, 
+버블정렬, 카운팅 정렬, 선택 정렬
+순차 검색, 이진 검색-> 정렬된 집단에서 빅오 n의 성능을 갖는 효율적인 검색방법 
+
+그리디 알고리즘:  현재 위치한 방식이 최선이라고 생각하고 조사하는 방법
+해집단 선택->  실행가능성조사(다음집단조사) -> 해검사 순서를 갖는다.
+
+전기버스 : 
+
+생각한 알고리즘 - 해검사 조건에 수를 줄이기 위해서 
+뒤에서 부터 조사 : 가정 - > 뒤에서 부터 조사하면 K를 최대한 활용한 값이 조사될 것이다.
+--> 9/10의 오답 형성
+
+T = int(input())
+
+for test_case in range(1, T + 1):
+        K, N, M= list(map(int, input().split()))
+        cond_2 = list(map(int, input().split()))
+        flag= 0
+        result= 0
+        loc= 0
+        for j in range(0, M-1):
+                for i in range(M-1, -1,-1):   
+                    if(cond_2[i]<=loc+K and cond_2[i]>loc):
+                        result = result+1
+                        loc =cond_2[i]
+                        if(loc+K>=N):
+                        	flag=1
+                        break
+                    elif(cond_2[i]>cond_2[i-1]+K and i-1 != (-1)):
+                        flag=1
+                        break
+
+                if(flag==1):
+                        break
+        print(f'#{test_case} {result}')                    
+        
+다른 사람이 푼 방식은 앞에서부터 진행하여 이동 값 충전을 검사하며 진행하며(K를 조정하여) 더 이상 진행할 수 없음(종료 지점에 도착)을 확인한다.
