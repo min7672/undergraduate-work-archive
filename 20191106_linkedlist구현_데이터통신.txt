@@ -1,0 +1,155 @@
+#include"stdio.h"
+#include"string.h"
+#include"stdlib.h"
+#include <stdio.h>
+
+#include <stdlib.h>
+
+ 
+
+#define NEXT(index,QSIZE)   ((index+1)%QSIZE)  //원형 큐에서 인덱스를 변경하는 매크로 함수
+
+ 
+
+typedef struct Queue
+{
+    char *buf;
+    int qsize;
+    int front; 
+    int rear;
+    int count;
+}Queue;
+
+void InitQueue(Queue *queue,int qsize);
+int IsFull(Queue *queue); 
+int IsEmpty(Queue *queue); 
+void Enqueue(Queue *queue,char data); 
+char Dequeue(Queue *queue); 
+void DisposeQueue(Queue *queue);
+
+void InitQueue(Queue *queue,int qsize)
+{
+    queue->buf = (char *)malloc(sizeof(char)*qsize);
+    queue->qsize = qsize;
+    queue->front = queue->rear= 0; //front와 rear를 0으로 설정
+    queue->count = 0;//보관 개수를 0으로 설정
+}
+
+int IsFull(Queue *queue)
+{   
+    return queue->count == queue->qsize;
+}
+
+int IsEmpty(Queue *queue)
+{
+    return queue->count == 0;    //보관 개수가 0이면 빈 상태
+}
+
+void Enqueue(Queue *queue,char data)
+{
+    if(IsFull(queue))//큐가 꽉 찼을 때
+    {
+        printf("큐가 꽉 찼음\n");
+        return ;
+    }
+    queue->buf[queue->rear] = data;//rear 인덱스에 데이터 보관
+    queue->rear = NEXT(queue->rear,queue->qsize); //rear를 다음 위치로 설정
+    queue->count++;//보관 개수를 1 증가
+}
+
+char Dequeue(Queue *queue)
+{
+    char re='0';
+
+    if(IsEmpty(queue)
+    {
+        printf("큐가 비었음\n");
+        return re;
+    }
+    re = queue->buf[queue->front];
+    queue->front = NEXT(queue->front,queue->qsize);
+    queue->count--;
+    return re;
+}
+
+void DisposeQueue(Queue *queue)
+{
+    free(queue->buf);
+}
+
+/*
+int main(void)
+{
+    int i;
+
+    Queue queue;
+    InitQueue(&queue,10);//큐 초기화
+    for(i=1;i<=5;i++)//1~5까지 큐에 보관
+    {
+        Enqueue(&queue,i);
+    }
+    while( ! IsEmpty(&queue) )//큐가 비어있지 않다면 반복
+    {
+        printf("%d ",Dequeue(&queue));
+    }
+}
+*/  // 사용법 예시 ,, 남의 코드 가져옴 //체크 함수가 int 형인거랑 count 어디다 쓰는 지 눈에 밟힘 귀찮으니 냅둠
+
+
+static char currentBit = '0';
+static int count_0 =  -1;
+static Queue queue;
+
+void ami(char bit)  //ther is check bit in my logic 
+{
+	if(bit== '1'){
+		hdb3();
+		count_0; 
+		if(currentBit == 0 || currentBit =='-'  ) 
+			currentBit ="+";
+		if( currentBit =='+'  ) 
+			currentBit ="-";
+		print(currentBit); //<-출력은 알아서 다뤄줏메 
+	}
+	else{
+		//currentBit ="0";
+		count_0++;
+		Enqueue(&queue,bit); 
+	}	
+}
+
+void hdb3()
+{	
+	int i; 
+	if( count_0 >=4){
+		for(i=0;i i<(count_0/4);i++){
+			if(i == 0){
+				printf("%c ",Dequeue(&queue));
+			}
+			else{
+				Dequeue(&queue);
+				ami('1');
+			}
+			printf("%c ",Dequeue(&queue));
+			printf("%c ",Dequeue(&queue));
+			
+			Dequeue(&queue);
+			ami('1');
+		}
+	}
+	else {
+		while( ! IsEmpty(&queue) )//큐가 비어있지 않다면 반복
+    		{
+        			printf("%c ",Dequeue(&queue));
+    		}
+	}
+}
+
+
+
+
+void main(void)
+{
+	    InitQueue(&queue,30);
+
+}
