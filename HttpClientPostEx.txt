@@ -1,0 +1,160 @@
+package assignment_0909;
+
+import java.awt.Image;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+public class HttpClientPostEx {
+	private final CloseableHttpClient httpClient = HttpClients.createDefault();
+	private void close() throws IOException {
+	        httpClient.close();
+	}
+	
+	private void sendPost() throws Exception {
+		HttpPost post = new HttpPost("http://210.217.95.183:8000/analyzer/");
+		
+		FileBody image = new FileBody(new File("C:/Users/gsm73/Desktop/과제2/Oh_1.jpg"));  // http-entity : name-body  _
+		StringBody comment = new StringBody("missoh.face, object", ContentType.TEXT_PLAIN);
+//		List<NameValuePair> urlParameters = new ArrayList<>();
+//		urlParameters.add(new BasicNameValuePair("key", image));  <- file upload fail
+//		urlParameters.add(new BasicNameValuePair("modules", "missoh.face, object"));
+		//UrlEncodedFormEntity->HttpEntity
+		HttpEntity reqEntity = MultipartEntityBuilder.create()
+				.addPart("image", image)
+				.addPart("modules", comment)
+				.build();
+		post.setEntity(reqEntity);
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		CloseableHttpResponse response = httpClient.execute(post);
+		
+		JSONObject instanceObject;
+		JSONObject instanceObject_layer2;
+		JSONObject elementObject;
+		JSONArray labalArray;
+		
+		
+		JSONParser jsonParser1 = new JSONParser();
+		JSONObject mainjorObject = (JSONObject) jsonParser1.parse(EntityUtils.toString(response.getEntity()));
+		JSONArray resultsArray =  (JSONArray) mainjorObject.get("results");
+	
+		resultsArray.get(0);//missoh.face  {position x y w h / label score description *n(등록된 인물)}
+		resultsArray.get(1);//object       {position x y w h / label score description *n(등록된 객체)}
+
+
+		JSONObject resultsObject = (JSONObject)  jsonParser1.parse(resultsArray.get(0).toString());  //missoh.face
+		JSONArray module_resultArray =  (JSONArray)resultsObject.get("module_result");
+		//face{[Haeyoung1, 0.9616928149909711, x, y, w, h]}
+		ArrayList<String> face = new ArrayList<String>();
+		String instance;
+		for(int i =0; i<module_resultArray.size();i++) {
+			instance ="face{";
+			//System.out.println(module_resultArray.get(i).toString());
+			instanceObject = (JSONObject)  jsonParser1.parse(module_resultArray.get(i).toString());
+			elementObject= (JSONObject)  jsonParser1.parse(instanceObject.get("position").toString());
+			
+			
+			instance+= "[ "+elementObject.get("x")+", "+elementObject.get("y")+", "+elementObject.get("w")+", "+elementObject.get("h")+"]";
+			labalArray= (JSONArray)  instanceObject.get("label");
+			
+			
+			for (int j = 0 ; j<labalArray.size();j++) {
+				instanceObject_layer2= (JSONObject)  jsonParser1.parse(labalArray.get(j).toString());
+				instance+="[ "+instanceObject_layer2.get("score")+", "+instanceObject_layer2.get("description")+" ]";
+			}
+			face.add(instance);
+		}
+		
+		resultsObject =(JSONObject)  jsonParser1.parse(resultsArray.get(1).toString());		//object 
+		module_resultArray =  (JSONArray)resultsObject.get("module_result");
+		//object{[person,“sc 0.989, x,y,w,h],. [....], [...]...} 
+		ArrayList<String> object = new ArrayList<String>();
+		for(int i =0; i<module_resultArray.size();i++) {
+			instance="object{";
+			instanceObject = (JSONObject)  jsonParser1.parse(module_resultArray.get(i).toString());
+			elementObject= (JSONObject)  jsonParser1.parse(instanceObject.get("position").toString());
+			
+			
+			instance+= "[ "+elementObject.get("x")+", "+elementObject.get("y")+", "+elementObject.get("w")+", "+elementObject.get("h")+"]";
+			labalArray= (JSONArray)  instanceObject.get("label");
+			
+			
+			for (int j = 0 ; j<labalArray.size();j++) {
+				instanceObject_layer2= (JSONObject)  jsonParser1.parse(labalArray.get(j).toString());
+				instance+="[ "+instanceObject_layer2.get("score")+", "+instanceObject_layer2.get("description")+" ]";
+			}
+			object.add(instance);
+		}
+		
+		
+		
+	    FileOutputStream fos = null;
+	    OutputStreamWriter osw = null;
+	    BufferedWriter bfw = null;
+	      try {
+	          fos = new FileOutputStream("20200909_ httprequest_face_강성민.txt");
+	          osw = new OutputStreamWriter(fos, "MS949");
+	          bfw = new BufferedWriter(osw);
+	          for(String element:face) {
+	        	  bfw.write(element+"\n");
+				}
+	      } catch (Exception e) {
+	          e.printStackTrace();
+	      } finally {  //닫기
+	    	  if(bfw != null) {try { bfw.close(); } catch (IOException e) { e.printStackTrace(); }}
+	          if(osw != null) {try { osw.close(); } catch (IOException e) { e.printStackTrace(); }}
+	    	  if(fos != null) {try { fos.close(); } catch (IOException e) { e.printStackTrace(); }}
+	          
+	      }
+	      try {
+	          fos = new FileOutputStream("20200909_ httprequest_object_강성민.txt");
+	          osw = new OutputStreamWriter(fos, "MS949");
+	          bfw = new BufferedWriter(osw);
+	          for(String element:object) {
+	        	  bfw.write(element+"\n");
+				}
+	      } catch (Exception e) {
+	          e.printStackTrace();
+	      } finally {  //닫기
+	    	  if(bfw != null) {try { bfw.close(); } catch (IOException e) { e.printStackTrace(); }}
+	          if(osw != null) {try { osw.close(); } catch (IOException e) { e.printStackTrace(); }}
+	    	  if(fos != null) {try { fos.close(); } catch (IOException e) { e.printStackTrace(); }}
+	          
+	      }
+	}
+	
+	public static void main(String[] args) throws Exception {
+
+		HttpClientPostEx obj = new HttpClientPostEx();
+        try {
+           // System.out.println("Testing 2 - Send Http POST request");
+            obj.sendPost();
+        } finally {
+            obj.close();
+        }
+    }
+}
+
