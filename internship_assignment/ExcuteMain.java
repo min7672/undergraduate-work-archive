@@ -1,4 +1,4 @@
-package assignment_0909;
+package internship_assignment;
 
 public class ExcuteMain {
 	

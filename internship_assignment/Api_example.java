@@ -1,4 +1,4 @@
-package assignment_0908;
+package internship_assignment;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -25,7 +25,10 @@ class HttpClientEx {
     public void close() throws IOException { httpClient.close();}
 
     public String sendGet(String word) throws Exception {
-    	String url ="https://stdict.korean.go.kr/api/search.do?certkey_no=1824&key=4E610577CB93277DAD953E690C986614&type_search=search&q="+word;    	
+		String certKeyNo = System.getenv("DICT_CERT_NO");  
+		String apiKey = System.getenv("DICT_API_KEY");  
+		String url = "https://stdict.korean.go.kr/api/search.do?certkey_no=" 
+             + certKeyNo + "&key=" + apiKey + "&type_search=search&q=" + word;
     	HttpGet request = new HttpGet(url);
     	String result="";
         //request.addHeader("host", "-");<- 오류

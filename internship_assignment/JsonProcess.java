@@ -1,4 +1,4 @@
-package assignment_0909;
+package internship_assignment;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
