@@ -19,8 +19,7 @@
 ## 디렉토리 구조
 ```
 undergraduate-work-archive/
-├── algorithms/ # 알고리즘 풀이, 문제 해결 연습
-├── assignments/ # 수업 과제, 실습 코드
+├── course_work/ # 알고리즘 풀이, 문제 해결 연습,수업 과제, 실습 코드
 ├── internship_assignment/ # 인턴십 과제 (Java HTTP Client 예제)
 └── internship_web/ # 인턴십 과제 (Django Web 프로젝트)
 ```
