@@ -1,0 +1,64 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+
+    #header, #nav, #section, #article, #aside, #footer {
+      display:block;
+      width:1200px;
+      margin:4px;
+      padding:4px;
+      background-color:#ddd;
+      text-align:center;
+    }
+    #section {
+      float:left;
+      width:600px;
+      height:460px;
+    }
+    #article {
+      width:600px;
+      height:140px;
+      background-color:#efefef;
+    }
+    #aside {
+      float:left;
+      width:600px;
+      height:600px;
+    }
+    #footer {
+      overflow:hidden;
+    }
+  </style>
+</head>
+<body>
+  <div id='header'>
+    <h1>Input Oh HaeYoung Image</h1>
+  </div>
+  <div id='nav'>
+    <form method="POST" enctype="multipart/form-data" >
+      {% csrf_token %}
+      <input type="file" name="document"><br/>
+      <button type="submit">전송</button>
+    </form>
+  </div>
+  <div id='section'>
+    <img src="{{ url }}" width='600px' height="460px" alt="">
+    <div id="article">
+      <a href='{{url}}' target="blank" style="text-decoration:none"></a>{{url}}<br/><br/>
+      사진에 인식된 등장인물은 {{face}} 입니다.<br/><br/>
+      인식된 개체는 {{obj}} 입니다.
+    </div>
+        
+  </div>
+
+  <div id='aside'>
+    <p>{{ origindata }}</p>
+  </div>
+  
+</body>
+</html>
